@@ -1,23 +1,24 @@
-// 모듈
 const express = require('express');
 
-// CONFIG
-const config = require('./config.js');
 
-// 라우터
-const test = require('./routes/test.js');
+const config = require('./config.js');
+const PORT = config.PORT;
+
+
 
 
 const app = express();
-const PORT = config.port;
-
-
-app.use(express.urlencoded({
-    extended: false
-}));
+app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
-app.use('/test', test);
+
+
+
+
+app.use('/auth', require('./routes/api/auth.js'));
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Server Run ::${PORT}`);
