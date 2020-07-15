@@ -1,4 +1,5 @@
-## REST API DOCS (작성중)
+## REST API REFERENCE
+* description : 개발용 회원가입, 로그인 REST API 
 * version : 1.0 
 * server : http://34.82.68.95:3000/
 ----
@@ -8,7 +9,7 @@
 ```
 Content-Type : application/json
 Body(json) : {
-  "id" : [사용자 아이디],
+  "employeeNumber" : [사용자 사원번호],
   "password" : [사용자 비밀번호],
   "name" : [사용자 이름]
 }
@@ -30,12 +31,12 @@ Body(json) : {
   "message" : "잘못된 회원정보입니다."
 }
 ``` 
-* [409] 아이디 중복시
+* [409] 서버에 이미 존재하는 사원번호일때
 ```
 Status : 409
 Content-Type : application/json
 Body(json) : {
-  "message" : "이미 존재하는 아이디입니다."
+  "message" : "이미 존재하는 사원번호입니다."
 }
 ```  
 * [415] Request Content-type 미지원시(json 아닌 경우)
@@ -64,7 +65,7 @@ Body(json) : {
 ```
 Content-Type : application/json
 Body(json) : {
-  "id" : [사용자 아이디],
+  "employeeNumber" : [사용자 사원번호],
   "password" : [사용자 비밀번호]
 }
 ```
@@ -95,12 +96,12 @@ Body(json) : {
   "message" : "비밀번호가 틀렸습니다."
 }
 ```
-* [404] 존재하지 않는 아이디일때
+* [404] 서버에 존재하지 않는 사원번호일때
 ```
 Status : 404
 Content-Type : application/json
 Body(json) : {
-  "message" : "존재하지 않는 아이디입니다."
+  "message" : "존재하지 않는 사원번호입니다."
 }
 ```
 * [415] Request Content-type 미지원시(json 아닌 경우)
@@ -124,3 +125,45 @@ Body(json) : {
 * a0003 : SERVER DB에 해당 아이디 중복 존재.
 * a0004 : SERVER 토큰 발행중 에러 발생.
 ----
+### 토큰 확인용 임시기능 [POST]  "/auth/test"
+
+#### Request
+```
+Content-Type : application/json
+Body(json) : {
+  "token" : [토큰]
+}
+```
+#### Response
+* [200] 토큰 검증 성공시 example
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "test!!",
+    "iat": 1594802901,
+    "exp": 1594810101,
+    "iss": "gbridge"
+}
+```
+* [200] 토큰 만료시 example
+> **토큰 유효시간 2시간으로 정상적인 기능**
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "TokenExpiredError",
+    "message": "jwt expired",
+    "expiredAt": "2020-07-15T06:01:45.000Z"
+}
+```
+* [200] 토큰 검증 실패 example
+> **서버 로직 문제거나, 토큰 값이 기기에서 변경되는 경우 심각**
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "JsonWebTokenError",
+    "message": "invalid algorithm"
+}
+```

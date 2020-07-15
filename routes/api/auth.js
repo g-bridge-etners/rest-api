@@ -20,13 +20,13 @@ const db = mysql.createConnection({
 const register = (req, res) => {
     if (req.is(["application/json", "json"])) {
         const {
-            id,
+            employeeNumber,
             password,
             name
         } = req.body;
 
 
-        if (!id || !password || !name) {
+        if (!employeeNumber || !password || !name) {
             res.status(400).json({
                 message: '잘못된 회원정보입니다.'
             });
@@ -34,12 +34,12 @@ const register = (req, res) => {
             const encryptedPassword = encrypto(password);
 
 
-            db.query('INSERT INTO gb_user (u_id, u_password, u_name) VALUES(?, ?, ?)', [id, encryptedPassword, name], (error, results, fields) => {
+            db.query('INSERT INTO gb_user (u_employee_number, u_password, u_name) VALUES(?, ?, ?)', [employeeNumber, encryptedPassword, name], (error, results, fields) => {
                 if (error) {
 
                     if (error.errno == 1062) {
                         res.status(409).json({
-                            message: '이미 존재하는 아이디입니다.'
+                            message: '이미 존재하는 사원번호입니다.'
                         });
                     } else {
                         console.log(error);
@@ -71,18 +71,18 @@ const register = (req, res) => {
 const login = (req, res) => {
     if (req.is(["application/json", "json"])) {
         const {
-            id,
+            employeeNumber,
             password
         } = req.body;
 
-        if (!id || !password) {
+        if (!employeeNumber || !password) {
             res.status(400).json({
                 message: '잘못된 로그인정보입니다.'
             });
         } else {
             const encryptedPassword = encrypto(password);
 
-            db.query('SELECT u_id, u_password, u_name FROM gb_user WHERE u_id = ?', [id], (error, results, fields) => {
+            db.query('SELECT u_employee_number, u_password, u_name FROM gb_user WHERE u_employee_number = ?', [employeeNumber], (error, results, fields) => {
                 if (error) {
                     console.log(error);
                     // db 에러
@@ -93,7 +93,7 @@ const login = (req, res) => {
                     if (results.length <= 0) {
                         // 없는 경우
                         res.status(404).json({
-                            message: '존재하지 않는 아이디입니다.'
+                            message: '존재하지 않는 사원번호입니다.'
                         });
                     } else if (results.length > 1) {
                         // 결과가 1초과?

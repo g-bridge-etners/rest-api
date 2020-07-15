@@ -5,10 +5,10 @@ const KEY = config.JWT_KEY;
 
 
 const myJwt = {
-    makeToken: (id, name) => {
+    makeToken: (employeeNumber, name) => {
         return new Promise((resolve, reject) => {
             const token = jwt.sign({
-                    id: id,
+                    employeeNumber: employeeNumber,
                     name: name
                 },
                 KEY, {
