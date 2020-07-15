@@ -1,4 +1,4 @@
-## REST API DOCS (작성중)
+## REST API REFERENCE (작성중)
 * version : 1.0 
 * server : http://34.82.68.95:3000/
 ----
@@ -8,7 +8,7 @@
 ```
 Content-Type : application/json
 Body(json) : {
-  "id" : [사용자 아이디],
+  "employeeNumber" : [사용자 사원번호],
   "password" : [사용자 비밀번호],
   "name" : [사용자 이름]
 }
@@ -30,12 +30,12 @@ Body(json) : {
   "message" : "잘못된 회원정보입니다."
 }
 ``` 
-* [409] 아이디 중복시
+* [409] 서버에 이미 존재하는 사원번호일때
 ```
 Status : 409
 Content-Type : application/json
 Body(json) : {
-  "message" : "이미 존재하는 아이디입니다."
+  "message" : "이미 존재하는 사원번호입니다."
 }
 ```  
 * [415] Request Content-type 미지원시(json 아닌 경우)
@@ -64,7 +64,7 @@ Body(json) : {
 ```
 Content-Type : application/json
 Body(json) : {
-  "id" : [사용자 아이디],
+  "employeeNumber" : [사용자 사원번호],
   "password" : [사용자 비밀번호]
 }
 ```
@@ -95,12 +95,12 @@ Body(json) : {
   "message" : "비밀번호가 틀렸습니다."
 }
 ```
-* [404] 존재하지 않는 아이디일때
+* [404] 서버에 존재하지 않는 사원번호일때
 ```
 Status : 404
 Content-Type : application/json
 Body(json) : {
-  "message" : "존재하지 않는 아이디입니다."
+  "message" : "존재하지 않는 사원번호입니다."
 }
 ```
 * [415] Request Content-type 미지원시(json 아닌 경우)
