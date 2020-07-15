@@ -1,4 +1,5 @@
-## REST API REFERENCE (작성중)
+## REST API REFERENCE 1.0
+* description : 개발용 회원가입, 로그인 REST API 
 * version : 1.0 
 * server : http://34.82.68.95:3000/
 ----
@@ -124,3 +125,45 @@ Body(json) : {
 * a0003 : SERVER DB에 해당 아이디 중복 존재.
 * a0004 : SERVER 토큰 발행중 에러 발생.
 ----
+### 토큰 확인용 임시기능 [POST]  "/auth/test"
+
+#### Request
+```
+Content-Type : application/json
+Body(json) : {
+  "token" : [토큰]
+}
+```
+#### Response
+* [200] 토큰 검증 성공시 example
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "test!!",
+    "iat": 1594802901,
+    "exp": 1594810101,
+    "iss": "gbridge"
+}
+```
+* [200] 토큰 만료시 example
+> **토큰 유효시간 2시간으로 정상적인 기능**
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "TokenExpiredError",
+    "message": "jwt expired",
+    "expiredAt": "2020-07-15T06:01:45.000Z"
+}
+```
+* [200] 토큰 검증 실패 example
+> **서버 로직 문제거나, 토큰 값이 기기에서 변경되는 경우 심각**
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+    "name": "JsonWebTokenError",
+    "message": "invalid algorithm"
+}
+```
