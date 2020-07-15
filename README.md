@@ -87,14 +87,6 @@ Body(json) : {
   "message" : "잘못된 로그인정보입니다."
 }
 ```
-* [400] Request argument null일때
-```
-Status : 400
-Content-Type : application/json
-Body(json) : {
-  "message" : "잘못된 로그인정보입니다."
-}
-```
 * [403] 비밀번호가 틀렸을때
 ```
 Status : 400
