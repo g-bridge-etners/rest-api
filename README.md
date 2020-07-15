@@ -1,4 +1,4 @@
-## REST API REFERENCE 1.0
+## REST API REFERENCE
 * description : 개발용 회원가입, 로그인 REST API 
 * version : 1.0 
 * server : http://34.82.68.95:3000/
