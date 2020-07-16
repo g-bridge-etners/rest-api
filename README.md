@@ -220,7 +220,7 @@ Body(json) : {
 
 #### Request
 ```
-Header
+Content-Type : application/json
 x-access-token : token
 Body(json) : {
   "method" : "gps" or "wifi",
