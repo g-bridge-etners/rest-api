@@ -308,6 +308,7 @@ Body(json) : {
 
 ----
 ### 내 출퇴근 기록 조회 [GET]  /commute/history
+* 현재 날짜기준 오름차순 전체 리스트 조회만 제공
 
 #### Request
 ```
