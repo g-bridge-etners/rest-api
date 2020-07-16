@@ -218,7 +218,7 @@ Body(json) : {
 > 발생시 errorCode 알려주세요!
 
 ----
-### 내 출퇴근 상태 확인 [PATCH]  /commute/check
+### 출퇴근 기능 [PATCH]  /commute/check
 
 #### Request
 ```
