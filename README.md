@@ -1,4 +1,4 @@
-## REST API REFERENCE (작성중)
+## REST API REFERENCE
 * description : 내 출퇴근 상태 확인 기능, 출퇴근 기능, 내 기록 확인 기능 업데이트
 * version : 2.0
 * server : http://34.82.68.95:3000/
@@ -185,7 +185,7 @@ Body(json) : {
   "clock_out" : //resultCode 퇴근완료 일때만 반환
 }
 ```  
-> clock_in, clock_out example : "13:59:54"  
+> clock_in, clock_out example : "13:59:54" (오후 1시 59분 54초)  
 > resultCode
 > * 출근중일때 : csr0001
 > * 퇴근완료시 : csr0002
@@ -292,6 +292,68 @@ Body(json) : {
   "message" : [message]
 }
 ```
+
+* [500] 서버 오류시
+```
+Status : 500
+Content-Type : application/json
+Body(json) : {
+  "message" : "(error : [에러코드])서버에서 오류가 발생했습니다."
+}
+``` 
+> 발생시 errorCode 알려주세요!
+
+
+----
+### 내 출퇴근 기록 조회 [GET]  /commute/history
+
+#### Request
+```
+Header
+x-access-token : token
+```
+#### Response
+* [200] 출퇴근 기록 반환 성공시
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+  "message" : "기록 반환 성공",
+  "history" : [
+    {
+    "status" : [출퇴근 상태],
+    "date" : [출퇴근 일자], // ex. 20-07-16 (2020년 7월 16일)
+    "clockInTime" : [출근시간], // ex. 13:23:27 (오후 1시 23분 27초)
+    "clockOutTime" : [퇴근시간] // ex. 13:25:40
+    },
+    
+    ...
+    
+  ]
+}
+```  
+
+* [404] 출퇴근 기록 없을때
+```
+Status : 404
+Content-Type : application/json
+Body(json) : {
+  "message" : "출퇴근 기록이 없습니다."
+}
+``` 
+
+* [401] 토큰 검증 실패시
+```
+Status : 401
+Content-Type : application/json
+Body(json) : {
+  "error" : [errorCode],
+  "message" : [errorMessage]
+}
+```  
+> errorCode, errorMessage
+> * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
+> * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
 
 * [500] 서버 오류시
 ```
