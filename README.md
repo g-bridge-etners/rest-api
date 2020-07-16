@@ -185,7 +185,7 @@ Body(json) : {
   "clock_out" : //resultCode 퇴근완료 일때만 반환
 }
 ```  
-> clock_in, clock_out example : "11:59:54"  
+> clock_in, clock_out example : "13:59:54"  
 > resultCode
 > * 출근중일때 : csr0001
 > * 퇴근완료시 : csr0002
