@@ -34,21 +34,18 @@ const status = (req, res) => {
                     });
                 } else if (results.length <= 0) {
                     res.status(200).json({
-                        code: "csr0003",
-                        message: "아직 출근하지 않았습니다."
+                        code: "csr0003"
                     });
                 } else {
                     const currentStatus = results[0].c_status;
                     if (currentStatus === '출근중') {
                         res.status(200).json({
-                            resultCode: "csr0001",
-                            message: '출근중 입니다.',
+                            code: "csr0001",
                             clock_in : results[0].c_clock_in_time
                         });
                     } else if (currentStatus === '퇴근완료') {
                         res.status(200).json({
                             code: "csr0002",
-                            message: "퇴근이 완료됬습니다.",
                             clock_in : results[0].c_clock_in_time,
                             clock_out : results[0].c_clock_out_time
                         });
