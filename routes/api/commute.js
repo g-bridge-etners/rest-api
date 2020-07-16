@@ -228,7 +228,7 @@ const history = (req, res) => {
     const token = req.headers['x-access-token'];
 
     myJwt.verifyToken(token).then((decoded) => {
-        db.query('SELECT c_status, DATE(c_date) AS c_date, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? ORDER BY c_date ASC', [decoded.employeeNumber], (error, results, fields) => {
+        db.query('SELECT c_status, DATE_FORMAT(c_date, "%y-%m-%d") AS c_date, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? ORDER BY c_date ASC', [decoded.employeeNumber], (error, results, fields) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({
