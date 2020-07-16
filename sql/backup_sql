@@ -1,4 +1,4 @@
-﻿/*****************************************************************************
+/*****************************************************************************
                         gb_user 생성문 (임시)
 ******************************************************************************/
 CREATE TABLE gb_user (
@@ -85,3 +85,16 @@ SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()
                     commute.js - check 퇴근 update문
 *****************************************************************************/
 UPDATE gb_temp SET c_clock_out = curtime(), c_status = "퇴근완료" WHERE c_employee_number = ? AND c_date = curdate() AND c_status = "출근중"
+
+
+
+/****************************************************************************
+                    commute.js - history 기록 select문
+*****************************************************************************/
+SELECT c_status, DATE(c_date) AS c_date, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? ORDER BY c_date ASC
+
+
+//임시
+INSERT INTO gb_temp (c_employee_number, c_date, c_clock_in, c_clock_out, c_status) VALUES(
+'200000000', curdate(), curtime(), curtime(), '퇴근완료'
+);
