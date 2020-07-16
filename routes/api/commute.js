@@ -220,6 +220,63 @@ const check = (req, res) => {
     }
 }
 
+/* --------------------------------------
+        사용자 출퇴근 기록 조회
+-----------------------------------------*/
+const history = (req, res) => {
+
+    const token = req.headers['x-access-token'];
+
+    myJwt.verifyToken(token).then((decoded) => {
+        db.query('SELECT c_status, DATE_FORMAT(c_date, "%y-%m-%d") AS c_date, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? ORDER BY c_date ASC', [decoded.employeeNumber], (error, results, fields) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({
+                    message: '(error : c0007) 서버에서 오류가 발생했습니다.'
+                });
+            } else {
+                if  (results.length <= 0) {
+                    res.status(404).json({
+                        message : '출퇴근 기록이 없습니다.'
+                    });
+                } else {
+                    let history = [];
+                    results.forEach((item, i) => {
+                        history.push({
+                            status : item.c_status,
+                            date : item.c_date,
+                            clockInTime : item.c_clock_in_time,
+                            clockOutTime : item.c_clock_out_time
+                        })
+                    });
+                    res.status(200).json({
+                        message : "출퇴근 기록 반환 성공",
+                        history : history
+                    });
+
+                }
+            }
+        });
+
+
+    }, (error) => {
+        if (error.name === "TokenExpiredError") {
+            res.status(401).json({
+                error: 't0000',
+                message: '만료된 토큰입니다.'
+            });
+        } else {
+            res.status(401).json({
+                error: 't0001',
+                message: '유효하지 않은 토큰입니다.'
+            });
+        }
+    });
+
+}
+
+
 router.get('/status', status);
 router.patch('/check', check);
+router.get('/history', history);
 module.exports = router;
