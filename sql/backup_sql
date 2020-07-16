@@ -1,0 +1,87 @@
+﻿/*****************************************************************************
+                        gb_user 생성문 (임시)
+******************************************************************************/
+CREATE TABLE gb_user (
+    u_employee_number VARCHAR(25) NOT NULL,
+    u_password VARCHAR(50) NOT NULL,
+    u_name VARCHAR(20) NOT NULL,
+    PRIMARY KEY (u_employee_number)
+);
+
+
+
+/****************************************************************************
+                        gb_commute 생성문 (임시)
+*****************************************************************************/
+CREATE TABLE gb_commute (
+	c_id INT NOT NULL AUTO_INCREMENT,
+	c_employee_number VARCHAR(25) NOT NULL,
+	c_clock_in VARCHAR(30) NOT NULL,
+	c_clock_out VARCHAR(30) DEFAULT null,
+	PRIMARY KEY (c_id),
+	FOREIGN KEY (c_employee_number) REFERENCES gb_user(u_employee_number) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE gb_temp (
+	c_id INT NOT NULL AUTO_INCREMENT,
+	c_employee_number VARCHAR(25) NOT NULL,
+    c_date DATETIME,
+	c_clock_in DATETIME NOT NULL,
+	c_clock_out DATETIME DEFAULT null,
+    c_status varchar(25),
+	PRIMARY KEY (c_id),
+	FOREIGN KEY (c_employee_number) REFERENCES gb_user(u_employee_number) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+/****************************************************************************
+                    auth.js - register 회원가입 insert문
+*****************************************************************************/
+INSERT INTO gb_user (u_employee_number, u_password, u_name) VALUES(?, ?, ?)
+
+
+
+/****************************************************************************
+                    auth.js - login 로그인 select문
+*****************************************************************************/
+SELECT u_employee_number, u_password, u_name FROM gb_user WHERE u_employee_number = ?
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+/****************************************************************************
+                    commute.js - status db에 저장된 상태 select문
+*****************************************************************************/
+SELECT c_status, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()
+
+
+
+/****************************************************************************
+                    commute.js - check 출근 상태 select문
+*****************************************************************************/
+SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()
+
+
+
+/****************************************************************************
+                    commute.js - check 출근 insert문
+*****************************************************************************/
+INSERT INTO gb_temp (c_employee_number, c_date, c_clock_in, c_status) VALUES(?, curdate(), curtime(), "출근중")
+
+
+
+/****************************************************************************
+                    commute.js - check 퇴근 상태 select문
+*****************************************************************************/
+SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()
+
+
+
+/****************************************************************************
+                    commute.js - check 퇴근 update문
+*****************************************************************************/
+UPDATE gb_temp SET c_clock_out = curtime(), c_status = "퇴근완료" WHERE c_employee_number = ? AND c_date = curdate() AND c_status = "출근중"

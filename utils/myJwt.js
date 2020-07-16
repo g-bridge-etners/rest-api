@@ -30,10 +30,8 @@ const myJwt = {
         return new Promise((resolve, reject) => {
             jwt.verify(token, KEY, (error, decoded) => {
                 if (error) {
-                    console.log(error);
                     reject(error);
                 } else {
-                    console.log('token : ', token);
                     resolve(decoded);
                 }
             });

@@ -2,7 +2,7 @@ const express = require('express');
 
 
 const config = require('./config.js');
-const PORT = config.PORT;
+const PORT = config.TEST_PORT;
 
 
 
@@ -16,7 +16,7 @@ app.use(express.json());
 
 
 app.use('/auth', require('./routes/api/auth.js'));
-
+app.use('/commute', require('./routes/api/commute.js'));
 
 
 

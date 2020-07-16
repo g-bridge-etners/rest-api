@@ -107,7 +107,7 @@ const login = (req, res) => {
                                 message: '비밀번호가 틀렸습니다.'
                             });
                         } else {
-                            myJwt.makeToken(results[0].u_id, results[0].u_name).then((token) => {
+                            myJwt.makeToken(results[0].u_employee_number, results[0].u_name).then((token) => {
                                 res.status(200).json({
                                     message: '로그인 성공, 토큰 발행',
                                     token: token
