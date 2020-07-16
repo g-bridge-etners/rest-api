@@ -1,7 +1,9 @@
 ## REST API REFERENCE
-* description : 내 출퇴근 상태 확인 기능, 출퇴근 기능, 내 기록 확인 기능 업데이트
 * version : 2.0
 * server : http://34.82.68.95:3000/
+* changeLog
+  * 1.0 : 로그인, 회원가입 기능  
+  * 2.0 : 내 출퇴근 상태 확인 기능, 출퇴근 기능, 내 기록 확인 기능 업데이트
 ----
 ### 회원가입 [POST]  /auth/register
 
