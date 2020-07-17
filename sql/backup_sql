@@ -5,24 +5,15 @@ CREATE TABLE gb_user (
     u_employee_number VARCHAR(25) NOT NULL,
     u_password VARCHAR(50) NOT NULL,
     u_name VARCHAR(20) NOT NULL,
+    u_department VARCHAR(30) NOT NULL,
     PRIMARY KEY (u_employee_number)
 );
 
 
 
 /****************************************************************************
-                        gb_commute 생성문 (임시)
+                        gb_temp 생성문 (임시)
 *****************************************************************************/
-CREATE TABLE gb_commute (
-	c_id INT NOT NULL AUTO_INCREMENT,
-	c_employee_number VARCHAR(25) NOT NULL,
-	c_clock_in VARCHAR(30) NOT NULL,
-	c_clock_out VARCHAR(30) DEFAULT null,
-	PRIMARY KEY (c_id),
-	FOREIGN KEY (c_employee_number) REFERENCES gb_user(u_employee_number) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-
 CREATE TABLE gb_temp (
 	c_id INT NOT NULL AUTO_INCREMENT,
 	c_employee_number VARCHAR(25) NOT NULL,
@@ -38,14 +29,14 @@ CREATE TABLE gb_temp (
 /****************************************************************************
                     auth.js - register 회원가입 insert문
 *****************************************************************************/
-INSERT INTO gb_user (u_employee_number, u_password, u_name) VALUES(?, ?, ?)
+INSERT INTO gb_user (u_employee_number, u_password, u_name, u_department) VALUES(?, ?, ?, ?)
 
 
 
 /****************************************************************************
                     auth.js - login 로그인 select문
 *****************************************************************************/
-SELECT u_employee_number, u_password, u_name FROM gb_user WHERE u_employee_number = ?
+SELECT u_employee_number, u_password, u_name, u_department FROM gb_user WHERE u_employee_number = ?
 
 
 

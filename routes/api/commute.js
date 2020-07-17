@@ -86,7 +86,7 @@ const check = (req, res) => {
                 type,
                 latitude,
                 longitude,
-                aps
+                ap
             } = req.body;
 
 

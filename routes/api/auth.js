@@ -22,7 +22,8 @@ const register = (req, res) => {
         const {
             employeeNumber,
             password,
-            name
+            name,
+            department
         } = req.body;
 
 
@@ -34,7 +35,7 @@ const register = (req, res) => {
             const encryptedPassword = encrypto(password);
 
 
-            db.query('INSERT INTO gb_user (u_employee_number, u_password, u_name) VALUES(?, ?, ?)', [employeeNumber, encryptedPassword, name], (error, results, fields) => {
+            db.query('INSERT INTO gb_user (u_employee_number, u_password, u_name, u_department) VALUES(?, ?, ?, ?)', [employeeNumber, encryptedPassword, name, department], (error, results, fields) => {
                 if (error) {
 
                     if (error.errno == 1062) {
@@ -82,7 +83,7 @@ const login = (req, res) => {
         } else {
             const encryptedPassword = encrypto(password);
 
-            db.query('SELECT u_employee_number, u_password, u_name FROM gb_user WHERE u_employee_number = ?', [employeeNumber], (error, results, fields) => {
+            db.query('SELECT u_employee_number, u_password, u_name, u_department FROM gb_user WHERE u_employee_number = ?', [employeeNumber], (error, results, fields) => {
                 if (error) {
                     console.log(error);
                     // db 에러
@@ -107,7 +108,7 @@ const login = (req, res) => {
                                 message: '비밀번호가 틀렸습니다.'
                             });
                         } else {
-                            myJwt.makeToken(results[0].u_employee_number, results[0].u_name).then((token) => {
+                            myJwt.makeToken(results[0].u_employee_number, results[0].u_name, results[0].u_department).then((token) => {
                                 res.status(200).json({
                                     message: '로그인 성공, 토큰 발행',
                                     token: token

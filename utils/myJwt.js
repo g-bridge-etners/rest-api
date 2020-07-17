@@ -5,14 +5,15 @@ const KEY = config.JWT_KEY;
 
 
 const myJwt = {
-    makeToken: (employeeNumber, name) => {
+    makeToken: (employeeNumber, name, department) => {
         return new Promise((resolve, reject) => {
             const token = jwt.sign({
                     employeeNumber: employeeNumber,
-                    name: name
+                    name: name,
+                    department : department
                 },
                 KEY, {
-                    expiresIn: '2h',
+                    expiresIn: '12h',
                     issuer: 'gbridge'
                 },
                 (error, token) => {
