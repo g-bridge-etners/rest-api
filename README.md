@@ -1,9 +1,10 @@
 ## REST API REFERENCE
-* version : 2.0
+* version : 2.1
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  
   * 2.0 : 내 출퇴근 상태 확인 기능, 출퇴근 기능, 내 기록 확인 기능 업데이트
+  * 2.1 : 출퇴근 기능 request Wifi AP 1개로 변경, 회원가입기능 회원정보에 부서 추가, 토큰 유효시간 12시간으로 변경
 ----
 ### 회원가입 [POST]  /auth/register
 
@@ -13,7 +14,8 @@ Content-Type : application/json
 Body(json) : {
   "employeeNumber" : [사용자 사원번호],
   "password" : [사용자 비밀번호],
-  "name" : [사용자 이름]
+  "name" : [사용자 이름],
+  "department" : [사용자 부서]
 }
 ```
 
@@ -218,7 +220,7 @@ Body(json) : {
 > 발생시 errorCode 알려주세요!
 
 ----
-### 내 출퇴근 상태 확인 [PATCH]  /commute/check
+### 출퇴근 기능 [PATCH]  /commute/check
 
 #### Request
 ```
@@ -229,7 +231,7 @@ Body(json) : {
   "type" : "in" or "out", //in - 출근, out - 퇴근
   "latitude" : [Number latitude], //gps인 경우에만 작성
   "longitude" : [Number longitude], //gps인 경우에만 작성
-  "aps" : [jsonArray aps] //wifi인 경우에만 작성
+  "ap" : [String ap] //wifi인 경우에만 작성
 }
 ```
 #### Response
