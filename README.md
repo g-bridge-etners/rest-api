@@ -1,5 +1,5 @@
 ## REST API REFERENCE
-* version : 2.1
+* version : 2.2
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  
@@ -8,6 +8,7 @@
     * 출퇴근 기능 request Wifi AP 1개로 변경
     * 회원가입기능 request 회원정보에 부서 추가
     * 토큰 유효시간 12시간으로 변경
+  * 2.2 : 내 출퇴근 상태 확인 기능 response에 사원명 추가
 ----
 ### 회원가입 [POST]  /auth/register
 
@@ -188,6 +189,7 @@ Status : 200
 Content-Type : application/json
 Body(json) : {
   "code" : [resultCode],
+  "name" : [userName],
   "clock_in" : //resultCode 출근중, 퇴근완료 일때만 반환,
   "clock_out" : //resultCode 퇴근완료 일때만 반환
 }
