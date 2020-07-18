@@ -21,7 +21,7 @@ const status = (req, res) => {
     const token = req.headers['x-access-token'];
 
     myJwt.verifyToken(token).then((decoded) => {
-        db.query('SELECT c_status, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
+        db.query('SELECT t.c_status AS c_status, TIME(t.c_clock_in) AS c_clock_in_time, TIME(t.c_clock_out) AS c_clock_out_time, u.u_name AS u_name FROM gb_temp t, gb_user u WHERE t.c_employee_number = ? AND t.c_date = curdate() AND t.c_employee_number = u.u_employee_number', [decoded.employeeNumber], (error, results, fields) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({
@@ -41,11 +41,13 @@ const status = (req, res) => {
                     if (currentStatus === '출근중') {
                         res.status(200).json({
                             code: "csr0001",
+                            name: reseults[0].u_name,
                             clock_in : results[0].c_clock_in_time
                         });
                     } else if (currentStatus === '퇴근완료') {
                         res.status(200).json({
                             code: "csr0002",
+                            name: results[0].u_name,
                             clock_in : results[0].c_clock_in_time,
                             clock_out : results[0].c_clock_out_time
                         });
