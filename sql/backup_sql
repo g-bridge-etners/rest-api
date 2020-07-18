@@ -47,7 +47,8 @@ SELECT u_employee_number, u_password, u_name, u_department FROM gb_user WHERE u_
 /****************************************************************************
                     commute.js - status db에 저장된 상태 select문
 *****************************************************************************/
-SELECT c_status, TIME(c_clock_in) AS c_clock_in_time,  TIME(c_clock_out) AS c_clock_out_time FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()
+SELECT t.c_status AS c_status, TIME(t.c_clock_in) AS c_clock_in_time, TIME(t.c_clock_out) AS c_clock_out_time, u.u_name AS u_name
+FROM gb_temp t, gb_user u WHERE t.c_employee_number = ? AND t.c_date = curdate() AND t.c_employee_number = u.u_employee_number
 
 
 
