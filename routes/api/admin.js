@@ -133,7 +133,7 @@ const getAttendnace = (req, res) => {
 
 const getDailyReport = (req, res) => {
     const token = req.headers['x-access-token'];
-    const date = req.query.date;
+    const date = req.params.date;
 
     myJwt.verifyToken(token).then((decoded) => {
         db.query(`SELECT a.a_start_time AS start_time, a.a_end_time AS end_time, c.c_clock_in AS clock_in, c.c_clock_out AS clock_out,
@@ -193,5 +193,5 @@ const getDailyReport = (req, res) => {
 
 router.put('/attendance', putAttendance);
 router.get('/attendances', getAttendnace);
-router.get('/report/daily', getDailyReport);
+router.get('/report/daily/:date', getDailyReport);
 module.exports = router;
