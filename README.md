@@ -9,6 +9,11 @@
     * 회원가입기능 request 회원정보에 부서 추가
     * 토큰 유효시간 12시간으로 변경
   * 2.2 : 내 출퇴근 상태 확인 기능 response에 사원명 추가
+  * 3.0
+    * 사원 근무 일정 수정 기능
+    * 사원별 근무 일정 목록 조회 기능
+    * 일자별 근태 기록 목록 조회 기능 추가
+    * 내 출퇴근 상태 확인 기능 버그 
 ----
 ### 회원가입 [POST]  /auth/register
 
@@ -364,6 +369,202 @@ Body(json) : {
 > errorCode, errorMessage
 > * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
 > * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
+
+* [500] 서버 오류시
+```
+Status : 500
+Content-Type : application/json
+Body(json) : {
+  "message" : "(error : [에러코드])서버에서 오류가 발생했습니다."
+}
+``` 
+> 발생시 errorCode 알려주세요!
+
+----
+### 관리자 - 사원 근무일정 수정 기능 [PUT]  /admin/attendance
+
+#### Request
+```
+Content-Type : application/json
+x-access-token : token
+Body(json) : {
+  "title" : [근무 제목],
+  "description" : [근무 설명],
+  "startDate" : [근무 시작 일자],   // 형식 "20-07-19"
+  "endDate" : [근무 종료 일자],
+  "startTime" : [근무 시작 시각],   // 형식 "18:37"
+  "endTime" : [근무 종료 시각]
+}
+```
+#### Response
+* [200] 근무일정 수정 성공시
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+  "message" : "근무일정 수정에 성공했습니다.",
+}
+```
+* [400] 전달인자 오류시
+```
+Status : 400
+Content-Type : application/json
+Body(json) : {
+  "message" : "잘못된 전달인자입니다."
+}
+```
+* [401] 토큰 검증 실패시
+```
+Status : 401
+Content-Type : application/json
+Body(json) : {
+  "error" : [errorCode],
+  "message" : [errorMessage]
+}
+```  
+> errorCode, errorMessage
+> * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
+> * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
+
+* [415] 잘못된 요청타입 (json 아닐 경우)
+```
+Status : 415
+Content-Type : application/json
+Body(json) : {
+  "message" : "잘못된 요청타입입니다."
+}
+```
+
+* [500] 서버 오류시
+```
+Status : 500
+Content-Type : application/json
+Body(json) : {
+  "message" : "(error : [에러코드])서버에서 오류가 발생했습니다."
+}
+``` 
+> 발생시 errorCode 알려주세요!
+
+
+----
+### 관리자 - 사원 근무일정 조회 기능 [GET]  /admin/attendances
+
+#### Request
+```
+Header
+x-access-token : token
+```
+#### Response
+* [200] 근무일정 목록 조회 성공시
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+  "message" : "근무 정보 반환 성공",
+  "attendance" : [
+    {
+    "name" : [사원명],
+    "employeeNumber" : [사번],
+    "department" : [사원 부서],
+    "title" : [일정 제목],    // 없는 경우 null
+    "description" : [일정 설명],    // 없는 경우 null
+    "startDate" : [시작 일자],   // 없는 경우 null, 형식 "20-07-19"
+    "endDate" : [종료 일자],    // 없는 경우 null
+    "startTime" : [시작 시간],    // 없는 경우 null, 형식 "18:44"
+    "endTime" : [종료 시간]    // 없는 경우 null
+    },
+    
+    ...
+    
+  ]
+}
+```
+* [401] 토큰 검증 실패시
+```
+Status : 401
+Content-Type : application/json
+Body(json) : {
+  "error" : [errorCode],
+  "message" : [errorMessage]
+}
+```  
+> errorCode, errorMessage
+> * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
+> * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
+
+* [404] 근무일정 없을때
+```
+Status : 404
+Content-Type : application/json
+Body(json) : {
+  "message" : "서버에 등록된 근무 정보가 없습니다."
+}
+``` 
+
+* [500] 서버 오류시
+```
+Status : 500
+Content-Type : application/json
+Body(json) : {
+  "message" : "(error : [에러코드])서버에서 오류가 발생했습니다."
+}
+``` 
+> 발생시 errorCode 알려주세요!
+
+----
+### 관리자 - 일자별 근태기록 목록 조회 기능 [GET]  /admin/report/daily?date=[일자]
+* 일자 형식 : 20-07-19
+
+#### Request
+```
+Header
+x-access-token : token
+```
+#### Response
+* [200] 근태기록 목록 조회 성공시
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+  "message" : "근무 기록 반환 성공",
+  "dailyReport" : [
+    {
+    "name" : [사원명],
+    "employeeNumber" : [사번],
+    "department" : [사원 부서],
+    "title" : [일정 제목],     // 없는 경우 null
+    "startTime" : [시작 시간],    // 없는 경우 null, 형식 "18:44"
+    "endTime" : [종료 시간],    // 없는 경우 null
+    "clockInTime" : [출근 시간],    // 없는 경우 null
+    "clockOutTime" : [퇴근 시간]    // 없는 경우 null
+    },
+    
+    ...
+    
+  ]
+}
+```
+* [401] 토큰 검증 실패시
+```
+Status : 401
+Content-Type : application/json
+Body(json) : {
+  "error" : [errorCode],
+  "message" : [errorMessage]
+}
+```  
+> errorCode, errorMessage
+> * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
+> * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
+
+* [404] 근무기록 없을때
+```
+Status : 404
+Content-Type : application/json
+Body(json) : {
+  "message" : "서버에 등록된 근무  없습니다."
+}
+``` 
 
 * [500] 서버 오류시
 ```
