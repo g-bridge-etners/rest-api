@@ -1,5 +1,5 @@
 ## REST API REFERENCE [작성중]
-* version : 3.0
+* version : 3.1
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  
@@ -14,6 +14,7 @@
     * 사원별 근무 일정 목록 조회 기능
     * 일자별 근태 기록 목록 조회 기능 추가
     * 내 출퇴근 상태 확인 기능 버그 
+  * 3.1 : 일자별 근태 기록 uri 수정
 ----
 ### 회원가입 [POST]  /auth/register
 
@@ -512,7 +513,7 @@ Body(json) : {
 > 발생시 errorCode 알려주세요!
 
 ----
-### 관리자 - 일자별 근태기록 목록 조회 기능 [GET]  /admin/report/daily?date=[일자]
+### 관리자 - 일자별 근태기록 목록 조회 기능 [GET]  /admin/report/daily/[date]
 * 일자 형식 : 20-07-19
 
 #### Request
