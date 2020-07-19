@@ -1,5 +1,5 @@
-## REST API REFERENCE
-* version : 2.2
+## REST API REFERENCE [작성중]
+* version : 3.0
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  

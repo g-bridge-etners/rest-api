@@ -26,6 +26,56 @@ CREATE TABLE gb_temp (
 );
 
 
+
+/****************************** ***********************************************
+                        gb_attendance 생성문 (임시)
+******************************************************************************/
+CREATE TABLE gb_attendance (
+    a_employee_number VARCHAR(25) NOT NULL,
+    a_title VARCHAR(50) DEFAULT NULL,
+    a_description VARCHAR(200) DEFAULT NULL,
+    a_start_date DATETIME DEFAULT NULL,
+    a_end_date DATETIME DEFAULT NULL,
+    a_start_time DATETIME DEFAULT NULL,
+    a_end_time DATETIME DEFAULT NULL,
+    PRIMARY KEY (a_employee_number),
+    FOREIGN KEY (a_employee_number) REFERENCES gb_user(u_employee_number) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+-----------------------------------admin--------------------------------------------
+
+
+
+/****************************************************************************
+                    admin.js - putAttendance 근태 정보 update문
+*****************************************************************************/
+UPDATE gb_attendance SET a_title = ?, a_description = ?, a_start_date = ?, a_end_date = ?, a_start_time = STR_TO_DATE(?, "%H:%i"), a_end_time = STR_TO_DATE(?, "%H:%i") WHERE a_employee_number = ?
+
+
+// test용 임시
+UPDATE gb_attendance SET a_start_date = DATE_FORMAT("20-07-19", "%y-%m-%d") WHERE a_employee_number = '200000000'; // 가능
+UPDATE gb_attendance SET a_start_date = "20-07-19" WHERE a_employee_number = '200000000'; // 가능
+UPDATE gb_attendance SET a_start_time = STR_TO_DATE('09:00', "%H:%i") WHERE a_employee_number = '200000000'; // 가능
+
+SET sql_mode='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+
+
+
+/****************************************************************************
+                    admin.js - putAttendance 근태 정보 select문
+*****************************************************************************/
+SELECT u_employee_number, u_name, u_department, a_title, a_description, a_start_date, a_end_date, a_start_time, a_end_time FROM gb_user, gb_attendance
+WHERE u_employee_number = a_employee_number
+ORDER BY u_employee_number ASC, a_employee_number ASC
+
+
+
+-----------------------------------auth--------------------------------------------
+
+
+
 /****************************************************************************
                     auth.js - register 회원가입 insert문
 *****************************************************************************/
@@ -40,7 +90,7 @@ SELECT u_employee_number, u_password, u_name, u_department FROM gb_user WHERE u_
 
 
 
--------------------------------------------------------------------------------
+----------------------------------commute-----------------------------------------
 
 
 

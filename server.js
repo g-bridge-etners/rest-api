@@ -17,6 +17,7 @@ app.use(express.json());
 
 app.use('/auth', require('./routes/api/auth.js'));
 app.use('/commute', require('./routes/api/commute.js'));
+app.use('/admin', require('./routes/api/admin.js'));
 
 
 
