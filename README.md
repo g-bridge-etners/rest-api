@@ -512,7 +512,7 @@ Body(json) : {
 > 발생시 errorCode 알려주세요!
 
 ----
-### 관리자 - 일자별 근태기록 목록 조회 기능 [GET]  /admin/report/daily?date=[일자]
+### 관리자 - 일자별 근태기록 목록 조회 기능 [GET]  /admin/report/daily/[date]
 * 일자 형식 : 20-07-19
 
 #### Request
