@@ -1,4 +1,4 @@
-## REST API REFERENCE [작성중]
+## REST API REFERENCE
 * version : 3.0
 * server : http://34.82.68.95:3000/
 * changeLog
