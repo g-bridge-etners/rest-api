@@ -136,12 +136,11 @@ const getDailyReport = (req, res) => {
     const date = req.query.date;
 
     myJwt.verifyToken(token).then((decoded) => {
-        db.query(`SELECT a.a_start_time AS start_time, a.a_end_time AS end_time, c.c_clock_in AS clock_in, c.c_clock_out AS clock_out,
-                         u.u_name AS name, u.u_department AS department, u.u_employee_number AS employee_number
-                  FROM gb_attendance a
-                  LEFT JOIN gb_temp c ON a.a_employee_number = c.c_employee_number
-                  LEFT JOIN gb_user u ON a.a_employee_number = u.u_employee_number
-                  WHERE a.a_start_date <= ? AND a.a_end_date >= ? AND (c.c_date = ? OR c.c_date is NULL)`,
+        db.query(`SELECT a.a_employee_number, a.a_start_time AS start_time, a.a_end_time AS end_time, c.c_date as date, c.c_clock_in AS clock_in, c.c_clock_out AS clock_out, u.u_name AS name, u.u_department AS department, u.u_employee_number AS employee_number
+        FROM gb_attendance a
+        LEFT JOIN gb_temp c ON a.a_employee_number = c.c_employee_number AND c.c_date = ?
+        LEFT JOIN gb_user u ON a.a_employee_number = u.u_employee_number
+        WHERE a.a_start_date <= ? AND a.a_end_date >= ?`,
             [date,date,date],
             (error, results, fields) => {
                 if (error) {
