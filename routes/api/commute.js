@@ -34,6 +34,7 @@ const status = (req, res) => {
                     });
                 } else if (results.length <= 0) {
                     res.status(200).json({
+                        name: results[0].u_name
                         code: "csr0003"
                     });
                 } else {
