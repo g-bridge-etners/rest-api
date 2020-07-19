@@ -41,7 +41,7 @@ const status = (req, res) => {
                     if (currentStatus === '출근중') {
                         res.status(200).json({
                             code: "csr0001",
-                            name: reseults[0].u_name,
+                            name: results[0].u_name,
                             clock_in : results[0].c_clock_in_time
                         });
                     } else if (currentStatus === '퇴근완료') {

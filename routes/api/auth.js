@@ -50,9 +50,18 @@ const register = (req, res) => {
                     }
 
                 } else {
-                    res.status(201).json({
-                        message: '회원가입 성공'
-                    });
+                    db.query('INSERT INTO gb_attendance (a_employee_number) VALUES(?)', [employeeNumber], (error,results,fields) =>{
+                        if(error) {
+                            console.log(error);
+                            res.status(500).json({
+                                message: '(error : a0005)서버에서 오류가 발생했습니다.'
+                            })
+                        } else {
+                            res.status(201).json({
+                                message: '회원가입 성공'
+                            });
+                        }
+                    })
                 }
             });
         }
