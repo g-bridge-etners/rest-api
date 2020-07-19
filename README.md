@@ -388,6 +388,9 @@ Body(json) : {
 Content-Type : application/json
 x-access-token : token
 Body(json) : {
+  "name" : [사원명],
+  "employeeNumber" : [사원번호],
+  "department" : [부서],
   "title" : [근무 제목],
   "description" : [근무 설명],
   "startDate" : [근무 시작 일자],   // 형식 "20-07-19"
