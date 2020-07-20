@@ -1,5 +1,5 @@
 ## REST API REFERENCE
-* version : 3.1
+* version : 3.2
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  
@@ -15,6 +15,9 @@
     * 일자별 근태 기록 목록 조회 기능 추가
     * 내 출퇴근 상태 확인 기능 버그 
   * 3.1 : 일자별 근태 기록 uri 수정, 어드민 api 일부 버그 수정
+  * 3.2
+    * 회사 GPS, WIFI 정보 등록 기능 추가
+    * GPS, WIFI 체크 로직 추가
 ----
 ### 회원가입 [POST]  /auth/register
 
