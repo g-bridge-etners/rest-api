@@ -193,6 +193,74 @@ const getDailyReport = (req, res) => {
     });
 }
 
+/* --------------------------------------
+        회사 위치정보 등록
+-----------------------------------------*/
+const postLocationGps = (req, res) => {
+    if (req.is(['application/json', 'json'])) {
+        const token = req.headers['x-access-token'];
+
+        myJwt.verifyToken(token).then((decoded) => {
+            const {
+                method,
+                latitude,
+                longitude,
+                ap
+            } = req.body;
+
+
+            if(method=='gps'){
+                db.query('INSERT INTO gb_location (l_method, l_latitude, l_longitude) VALUES(?,?,?)',
+                    [method, latitude, longitude], (error, results, fields) => {
+                        if (error) {
+                            console.log(error);
+                            res.status(500).json({
+                                message: '(error : ad0004) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            res.status(200).json({
+                                message: 'GPS 위치정보 등록 성공'
+                            });
+                        }
+                    });
+            } else if (method == 'wifi') {
+                db.query('INSERT INTO gb_location (l_method, l_ap) VALUES(?,?)',
+                    [method, ap], (error, results, fields) => {
+                        if (error) {
+                            console.log(error);
+                            res.status(500).json({
+                                message: '(error : ad005) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            res.status(200).json({
+                                message: 'WIFI 위치정보 등록 성공'
+                            });
+                        }
+                    });
+            }
+
+
+        }, (error) => {
+            if (error.name === "TokenExpiredError") {
+                res.status(401).json({
+                    error: 't0000',
+                    message: '만료된 토큰입니다.'
+                });
+            } else {
+                res.status(401).json({
+                    error: 't0001',
+                    message: '유효하지 않은 토큰입니다.'
+                });
+            }
+        });
+    } else {
+        res.status(415).json({
+            message: '잘못된 요청타입입니다.'
+        });
+    }
+}
+
+router.post('/location', postLocation);
 router.put('/attendance', putAttendance);
 router.get('/attendances', getAttendnace);
 router.get('/report/daily/:date', getDailyReport);
