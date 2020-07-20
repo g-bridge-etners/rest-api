@@ -36,6 +36,7 @@ const status = (req, res) => {
                     res.status(200).json({
                         code: "csr0003",
                         name: decoded.name
+
                     });
                 } else {
                     const currentStatus = results[0].c_status;
