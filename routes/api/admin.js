@@ -196,7 +196,7 @@ const getDailyReport = (req, res) => {
 /* --------------------------------------
         회사 위치정보 등록
 -----------------------------------------*/
-const postLocationGps = (req, res) => {
+const postLocation = (req, res) => {
     if (req.is(['application/json', 'json'])) {
         const token = req.headers['x-access-token'];
 
