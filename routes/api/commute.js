@@ -93,9 +93,6 @@ const check = (req, res) => {
                 ap
             } = req.body;
 
-
-
-
             if (!method || !type) {
                 res.status(400).json({
                     message: '잘못된 전달인자입니다.'
@@ -104,25 +101,46 @@ const check = (req, res) => {
                 let isValidLocation = false;
 
                 if (method === 'gps') {
-
-                    //
-                    // 검증 로직 필요
-                    //
-
-                    isValidLocation = true;
+                    db.query('SELECT l_latitude, l_longitude FROM gb_location WHERE l_method = "gps"', (error, results, fields) => {
+                        if (error) {
+                            res.status(500).json({
+                                message: '(error : c0008) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            results.forEach((item, i) => {
+                                let comLatitude = item.l_latitude;
+                                let comLongitude = item.l_longitude;
+                                const distance = getDistanceFromLatLonInM(comLatitude, comLongitude, latitude, longitude);
+                                if (distance <= 700) {
+                                    isValidLocation = true;
+                                }
+                            });
+                            done();
+                        }
+                    });
                 } else if (method === 'wifi') {
-
-                    //
-                    // 검증 로직 필요
-                    //
-
-                    isValidLocation = true;
+                    db.query('SELECT l_ap FROM gb_location WHERE l_method = "wifi"', (error, results, fields) => {
+                        if (error) {
+                            res.status(500).json({
+                                message: '(error : c0009) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            results.forEach((item, i) => {
+                                let comAp = item.l_ap;
+                                if (comAp == ap) {
+                                    isValidLocation = true;
+                                }
+                            });
+                            done();
+                        }
+                    });
                 } else {
                     res.status(400).json({
                         message: '잘못된 전달인자입니다.'
                     });
                 }
 
+                const done = () => {
                 if (isValidLocation) {
                     const employeeNumber = decoded.employeeNumber;
 
@@ -203,7 +221,7 @@ const check = (req, res) => {
                     });
                 }
             }
-
+          }
         }, (error) => {
             if (error.name === "TokenExpiredError") {
                 res.status(401).json({
