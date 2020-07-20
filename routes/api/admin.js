@@ -23,6 +23,9 @@ const putAttendance = (req, res) => {
         const token = req.headers['x-access-token'];
         myJwt.verifyToken(token).then((decoded) => {
             const {
+                name,
+                employeeNumber,
+                department,
                 title,
                 description,
                 startDate,
@@ -37,7 +40,7 @@ const putAttendance = (req, res) => {
                 });
             } else {
                 db.query('UPDATE gb_attendance SET a_title = ?, a_description = ?, a_start_date = ?, a_end_date = ?, a_start_time = STR_TO_DATE(?, "%H:%i"), a_end_time = STR_TO_DATE(?, "%H:%i") WHERE a_employee_number = ?',
-                    [title, description, startDate, endDate, startTime, endTime, decoded.employeeNumber], (error, results, fields) => {
+                    [title, description, startDate, endDate, startTime, endTime, employeeNumber], (error, results, fields) => {
                         if (error) {
                             console.log(error);
                             res.status(500).json({
@@ -133,7 +136,7 @@ const getAttendnace = (req, res) => {
 
 const getDailyReport = (req, res) => {
     const token = req.headers['x-access-token'];
-    const date = req.query.date;
+    const date = req.params.date;
 
     myJwt.verifyToken(token).then((decoded) => {
         db.query(`SELECT a.a_employee_number, a.a_start_time AS start_time, a.a_end_time AS end_time, c.c_date as date, c.c_clock_in AS clock_in, c.c_clock_out AS clock_out, u.u_name AS name, u.u_department AS department, u.u_employee_number AS employee_number
@@ -192,5 +195,5 @@ const getDailyReport = (req, res) => {
 
 router.put('/attendance', putAttendance);
 router.get('/attendances', getAttendnace);
-router.get('/report/daily', getDailyReport);
+router.get('/report/daily/:date', getDailyReport);
 module.exports = router;
