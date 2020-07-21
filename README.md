@@ -1,5 +1,5 @@
 ## REST API REFERENCE
-* version : 3.1
+* version : 3.2
 * server : http://34.82.68.95:3000/
 * changeLog
   * 1.0 : 로그인, 회원가입 기능  
@@ -15,6 +15,11 @@
     * 일자별 근태 기록 목록 조회 기능 추가
     * 내 출퇴근 상태 확인 기능 버그 
   * 3.1 : 일자별 근태 기록 uri 수정, 어드민 api 일부 버그 수정
+  * 3.2
+    * 회사 GPS, WIFI 정보 등록 기능 추가
+    * 출퇴근시 GPS, WIFI 체크 로직 추가
+    * 연동 과정에서 발생한 버그 수정
+    * 토큰 확인용 임시기능 삭제
 ----
 ### 회원가입 [POST]  /auth/register
 
@@ -91,7 +96,8 @@ Status : 200
 Content-Type : application/json
 Body(json) : {
   "message" : "로그인 성공, 토큰 발행",
-  "token" : [토큰]
+  "token" : [토큰],
+  "isAdmin" : [bool]
 }
 ```
 > token-example : eyJhbGciOiJIUzI1NaIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpZDIzIiwibmFtZSI6InRlc3RuYW1lIiwiaWF0IjoxNTk0Nzg2MDg2LCJleHAiOjE1OTQ3OTMyODYsImlzcyI6ImdicmlkZ2UifQ.UwRrFtLepGsr6W9VGkWvnoGWqWxJbpM1VHvLGloa3gE
@@ -136,50 +142,6 @@ Body(json) : {
 }
 ``` 
 > 발생시 errorCode 알려주세요!
-----
-
-### 토큰 확인용 임시기능 [POST]  "/auth/test"
-
-#### Request
-```
-Content-Type : application/json
-Body(json) : {
-  "token" : [토큰]
-}
-```
-#### Response
-* [200] 토큰 검증 성공시 example
-```
-Status : 200
-Content-Type : application/json
-Body(json) : {
-    "name": "test!!",
-    "iat": 1594802901,
-    "exp": 1594810101,
-    "iss": "gbridge"
-}
-```
-* [200] 토큰 만료시 example
-> **토큰 유효시간 2시간으로 정상적인 기능**
-```
-Status : 200
-Content-Type : application/json
-Body(json) : {
-    "name": "TokenExpiredError",
-    "message": "jwt expired",
-    "expiredAt": "2020-07-15T06:01:45.000Z"
-}
-```
-* [200] 토큰 검증 실패 example
-> **서버 로직 문제거나, 토큰 값이 기기에서 변경되는 경우 심각**
-```
-Status : 200
-Content-Type : application/json
-Body(json) : {
-    "name": "JsonWebTokenError",
-    "message": "invalid algorithm"
-}
-```
 ----
 ### 내 출퇴근 상태 확인 [GET]  /commute/status
 
@@ -567,6 +529,64 @@ Body(json) : {
 }
 ``` 
 
+* [500] 서버 오류시
+```
+Status : 500
+Content-Type : application/json
+Body(json) : {
+  "message" : "(error : [에러코드])서버에서 오류가 발생했습니다."
+}
+``` 
+> 발생시 errorCode 알려주세요!
+
+
+----
+### 관리자 - 회사 위치정보 등록 기능  [POST]  /admin/location
+* 로그인 성공시 반환되는 토큰은 기기에 저장!!
+
+#### Request
+```
+Content-Type : application/json
+x-access-token : [token]
+Body(json) : {
+  "method" : [gps or wifi],
+  "latitude" : [latitude], //gps인 경우에만 작성
+  "longitude" : [longitude], // gps인 경우에만 작성
+  "ap" : [ap] // wifi인 경우에만 작성
+}
+```
+#### Response
+* [200] 위치정보 등록 성공시
+```
+Status : 200
+Content-Type : application/json
+Body(json) : {
+  "message" : "[method] 위치정보 등록 성공"
+}
+```
+
+* [401] 토큰 검증 실패시
+```
+Status : 401
+Content-Type : application/json
+Body(json) : {
+  "error" : [errorCode],
+  "message" : [errorMessage]
+}
+```  
+> errorCode, errorMessage
+> * 토근 유효기간 만료시 : t0000, 만료된 토큰입니다. (토큰 재발급 필요)
+> * 유효하지 않은 토큰시 : t0001, 유효하지 않은 토큰입니다.
+
+
+* [415] Request Content-type 미지원시(json 아닌 경우)
+```
+Status : 415
+Content-Type : application/json
+Body(json) : {
+  "message" : "잘못된 요청타입입니다."
+}
+``` 
 * [500] 서버 오류시
 ```
 Status : 500
