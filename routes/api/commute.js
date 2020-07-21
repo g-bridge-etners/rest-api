@@ -36,7 +36,6 @@ const status = (req, res) => {
                     res.status(200).json({
                         code: "csr0003",
                         name: decoded.name
-
                     });
                 } else {
                     const currentStatus = results[0].c_status;
@@ -44,14 +43,14 @@ const status = (req, res) => {
                         res.status(200).json({
                             code: "csr0001",
                             name: decoded.name,
-                            clock_in : results[0].c_clock_in_time
+                            clock_in: results[0].c_clock_in_time
                         });
                     } else if (currentStatus === '퇴근완료') {
                         res.status(200).json({
                             code: "csr0002",
                             name: decoded.name,
-                            clock_in : results[0].c_clock_in_time,
-                            clock_out : results[0].c_clock_out_time
+                            clock_in: results[0].c_clock_in_time,
+                            clock_out: results[0].c_clock_out_time
                         });
                     }
                 }
@@ -75,7 +74,22 @@ const status = (req, res) => {
 
 }
 
+function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1); // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return d * 1000;
+}
 
+function deg2rad(deg) {
+    return deg * (Math.PI / 180)
+}
 
 /* --------------------------------------
         사용자 출근 혹은 퇴근 처리
@@ -104,103 +118,125 @@ const check = (req, res) => {
                 let isValidLocation = false;
 
                 if (method === 'gps') {
-
-                    //
-                    // 검증 로직 필요
-                    //
-
-                    isValidLocation = true;
+                    db.query('SELECT l_latitude, l_longitude FROM gb_location WHERE l_method = "gps"', (error, results, fields) => {
+                        if (error) {
+                            res.status(500).json({
+                                message: '(error : c0008) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            results.forEach((item, i) => {
+                                let comLatitude = item.l_latitude;
+                                let comLongitude = item.l_longitude;
+                                const distance = getDistanceFromLatLonInM(comLatitude, comLongitude, latitude, longitude);
+                                if (distance <= 700) {
+                                    isValidLocation = true;
+                                }
+                            });
+                            done();
+                        }
+                    });
                 } else if (method === 'wifi') {
-
-                    //
-                    // 검증 로직 필요
-                    //
-
-                    isValidLocation = true;
+                    db.query('SELECT l_ap FROM gb_location WHERE l_method = "wifi"', (error, results, fields) => {
+                        if (error) {
+                            res.status(500).json({
+                                message: '(error : c0009) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            results.forEach((item, i) => {
+                                let comAp = item.l_ap;
+                                if (comAp == ap) {
+                                    isValidLocation = true;
+                                }
+                            });
+                            done();
+                        }
+                    });
                 } else {
                     res.status(400).json({
                         message: '잘못된 전달인자입니다.'
                     });
                 }
 
-                if (isValidLocation) {
-                    const employeeNumber = decoded.employeeNumber;
+                const done = () => {
+                    if (isValidLocation) {
+                        const employeeNumber = decoded.employeeNumber;
 
-                    if (type === 'in') {
-                        db.query('SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
-                            if (error) {
-                                console.log(error);
-                                res.status(500).json({
-                                    message: '(error : c0005) 서버에서 오류가 발생했습니다.'
-                                });
-                            } else {
-                                if (results.length <= 0) {
-                                    db.query('INSERT INTO gb_temp (c_employee_number, c_date, c_clock_in, c_status) VALUES(?, curdate(), curtime(), "출근중")', [employeeNumber], (error, results, fields) => {
-                                        if (error) {
-                                            console.log(error);
-                                            res.status(500).json({
-                                                message: '(error : c0001) 서버에서 오류가 발생했습니다.'
-                                            });
-                                        } else {
-                                            res.status(200).json({
-                                                message: '출근 완료'
-                                            });
-                                        }
+                        if (type === 'in') {
+                            db.query('SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
+                                if (error) {
+                                    console.log(error);
+                                    res.status(500).json({
+                                        message: '(error : c0005) 서버에서 오류가 발생했습니다.'
                                     });
                                 } else {
-                                    res.status(418).json({
-                                        message : '이미 출근중 입니다.'
-                                    });
-                                }
-                            }
-                        });
-
-                    } else if (type === 'out') {
-                        db.query('SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
-                            if (error) {
-                                console.log(error);
-                                res.status(500).json({
-                                    message: '(error : c0006) 서버에서 오류가 발생했습니다.'
-                                });
-                            } else {
-                                if (results.length <= 0) {
-                                    res.status(418).json({
-                                        message : '아직 출근하지 않았습니다.'
-                                    });
-
-                                } else if (results[0].c_status === '퇴근완료') {
-                                    res.status(418).json({
-                                        message : '이미 퇴근했습니다.'
-                                    });
-
-                                } else {
-                                    db.query('UPDATE gb_temp SET c_clock_out = curtime(), c_status = "퇴근완료" WHERE c_employee_number = ? AND c_date = curdate() AND c_status = "출근중"',
-                                        [employeeNumber], (error, results, fields) => {
+                                    if (results.length <= 0) {
+                                        db.query('INSERT INTO gb_temp (c_employee_number, c_date, c_clock_in, c_status) VALUES(?, curdate(), curtime(), "출근중")', [employeeNumber], (error, results, fields) => {
                                             if (error) {
                                                 console.log(error);
                                                 res.status(500).json({
-                                                    message: '(error : c0002) 서버에서 오류가 발생했습니다.'
+                                                    message: '(error : c0001) 서버에서 오류가 발생했습니다.'
                                                 });
                                             } else {
                                                 res.status(200).json({
-                                                    message: '퇴근 완료'
+                                                    message: '출근 완료'
                                                 });
                                             }
                                         });
+                                    } else {
+                                        res.status(418).json({
+                                            message: '이미 출근중 입니다.'
+                                        });
+                                    }
                                 }
-                            }
-                        });
+                            });
+
+                        } else if (type === 'out') {
+                            db.query('SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
+                                if (error) {
+                                    console.log(error);
+                                    res.status(500).json({
+                                        message: '(error : c0006) 서버에서 오류가 발생했습니다.'
+                                    });
+                                } else {
+                                    if (results.length <= 0) {
+                                        res.status(418).json({
+                                            message: '아직 출근하지 않았습니다.'
+                                        });
+
+                                    } else if (results[0].c_status === '퇴근완료') {
+                                        res.status(418).json({
+                                            message: '이미 퇴근했습니다.'
+                                        });
+
+                                    } else {
+                                        db.query('UPDATE gb_temp SET c_clock_out = curtime(), c_status = "퇴근완료" WHERE c_employee_number = ? AND c_date = curdate() AND c_status = "출근중"',
+                                            [employeeNumber], (error, results, fields) => {
+                                                if (error) {
+                                                    console.log(error);
+                                                    res.status(500).json({
+                                                        message: '(error : c0002) 서버에서 오류가 발생했습니다.'
+                                                    });
+                                                } else {
+                                                    res.status(200).json({
+                                                        message: '퇴근 완료'
+                                                    });
+                                                }
+                                            });
+                                    }
+                                }
+                            });
+
+                        } else {
+                            res.status(400).json({
+                                message: '잘못된 전달인자입니다.'
+                            });
+                        }
 
                     } else {
-                        res.status(400).json({
-                            message: '잘못된 전달인자입니다.'
+                        res.status(406).json({
+                            message: '위치가 회사가 아닙니다.'
                         });
                     }
-
-                } else {
-                    res.status(406).json({
-                        message: '위치가 회사가 아닙니다.'
-                    });
                 }
             }
 
@@ -239,23 +275,23 @@ const history = (req, res) => {
                     message: '(error : c0007) 서버에서 오류가 발생했습니다.'
                 });
             } else {
-                if  (results.length <= 0) {
+                if (results.length <= 0) {
                     res.status(404).json({
-                        message : '출퇴근 기록이 없습니다.'
+                        message: '출퇴근 기록이 없습니다.'
                     });
                 } else {
                     let history = [];
                     results.forEach((item, i) => {
                         history.push({
-                            status : item.c_status,
-                            date : item.c_date,
-                            clockInTime : item.c_clock_in_time,
-                            clockOutTime : item.c_clock_out_time
+                            status: item.c_status,
+                            date: item.c_date,
+                            clockInTime: item.c_clock_in_time,
+                            clockOutTime: item.c_clock_out_time
                         })
                     });
                     res.status(200).json({
-                        message : "출퇴근 기록 반환 성공",
-                        history : history
+                        message: "출퇴근 기록 반환 성공",
+                        history: history
                     });
 
                 }

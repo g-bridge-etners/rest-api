@@ -44,6 +44,17 @@ CREATE TABLE gb_attendance (
 
 
 
+/*****************************************************************************
+                        gb_loaction 생성문 (임시)
+******************************************************************************/
+CREATE TABLE gb_location (
+    l_method VARCHAR(20) NOT NULL,
+    l_latitude DOUBLE DEFAULT null,
+    l_longitude DOUBLE DEFAULT null,
+    l_ap VARCHAR(50) DEFAULT null
+);
+
+
 -----------------------------------admin--------------------------------------------
 
 

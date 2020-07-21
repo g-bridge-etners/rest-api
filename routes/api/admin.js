@@ -39,7 +39,7 @@ const putAttendance = (req, res) => {
                     message: '잘못된 전달인자입니다.'
                 });
             } else {
-                db.query('UPDATE gb_attendance SET a_title = ?, a_description = ?, a_start_date = ?, a_end_date = ?, a_start_time = STR_TO_DATE(?, "%H:%i"), a_end_time = STR_TO_DATE(?, "%H:%i") WHERE a_employee_number = ?',
+                db.query('UPDATE gb_attendance SET a_title = ?, a_description = ?, a_start_date = ?, a_end_date = ?, a_start_time = ?, a_end_time = ? WHERE a_employee_number = ?',
                     [title, description, startDate, endDate, startTime, endTime, employeeNumber], (error, results, fields) => {
                         if (error) {
                             console.log(error);
@@ -104,8 +104,8 @@ const getAttendnace = (req, res) => {
                                 description: item.a_description,
                                 startDate: (item.a_start_date == null ? null : moment(item.a_start_date).format('YY-MM-DD')),
                                 endDate: (item.a_end_date == null ? null : moment(item.a_end_date).format('YY-MM-DD')),
-                                startTime: (item.a_start_time == null ? null : moment(item.a_start_time).format('HH:mm')),
-                                endTime: (item.a_end_time == null ? null : moment(item.a_end_time).format('HH:mm'))
+                                startTime: item.a_start_time,
+                                endTime: item.a_end_time
                             })
                         });
                         res.status(200).json({
@@ -144,7 +144,7 @@ const getDailyReport = (req, res) => {
         LEFT JOIN gb_temp c ON a.a_employee_number = c.c_employee_number AND c.c_date = ?
         LEFT JOIN gb_user u ON a.a_employee_number = u.u_employee_number
         WHERE a.a_start_date <= ? AND a.a_end_date >= ?`,
-            [date,date,date],
+            [date, date, date],
             (error, results, fields) => {
                 if (error) {
                     console.log(error);
@@ -163,11 +163,12 @@ const getDailyReport = (req, res) => {
                                 name: item.name,
                                 employeeNumber: item.employee_number,
                                 department: item.department,
-                                startTime: (item.start_time == null ? null : moment(item.start_time).format('HH:mm')),
-                                endTime: (item.end_time == null ? null : moment(item.end_time).format('HH:mm')),
+                                startTime: item.start_time,
+                                endTime: item.end_time,
                                 clockInTime: (item.clock_in == null ? null : moment(item.clock_in).format('HH:mm')),
                                 clockOutTime: (item.clock_out == null ? null : moment(item.clock_out).format('HH:mm'))
                             })
+
                         });
                         res.status(200).json({
                             message: "근무 기록 반환 성공",
@@ -193,6 +194,74 @@ const getDailyReport = (req, res) => {
     });
 }
 
+/* --------------------------------------
+        회사 위치정보 등록
+-----------------------------------------*/
+const postLocation = (req, res) => {
+    if (req.is(['application/json', 'json'])) {
+        const token = req.headers['x-access-token'];
+
+        myJwt.verifyToken(token).then((decoded) => {
+            const {
+                method,
+                latitude,
+                longitude,
+                ap
+            } = req.body;
+
+
+            if(method=='gps'){
+                db.query('INSERT INTO gb_location (l_method, l_latitude, l_longitude) VALUES(?,?,?)',
+                    [method, latitude, longitude], (error, results, fields) => {
+                        if (error) {
+                            console.log(error);
+                            res.status(500).json({
+                                message: '(error : ad0004) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            res.status(200).json({
+                                message: 'GPS 위치정보 등록 성공'
+                            });
+                        }
+                    });
+            } else if (method == 'wifi') {
+                db.query('INSERT INTO gb_location (l_method, l_ap) VALUES(?,?)',
+                    [method, ap], (error, results, fields) => {
+                        if (error) {
+                            console.log(error);
+                            res.status(500).json({
+                                message: '(error : ad005) 서버에서 오류가 발생했습니다.'
+                            });
+                        } else {
+                            res.status(200).json({
+                                message: 'WIFI 위치정보 등록 성공'
+                            });
+                        }
+                    });
+            }
+
+
+        }, (error) => {
+            if (error.name === "TokenExpiredError") {
+                res.status(401).json({
+                    error: 't0000',
+                    message: '만료된 토큰입니다.'
+                });
+            } else {
+                res.status(401).json({
+                    error: 't0001',
+                    message: '유효하지 않은 토큰입니다.'
+                });
+            }
+        });
+    } else {
+        res.status(415).json({
+            message: '잘못된 요청타입입니다.'
+        });
+    }
+}
+
+router.post('/location', postLocation);
 router.put('/attendance', putAttendance);
 router.get('/attendances', getAttendnace);
 router.get('/report/daily/:date', getDailyReport);
