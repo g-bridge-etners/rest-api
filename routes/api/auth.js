@@ -118,10 +118,20 @@ const login = (req, res) => {
                             });
                         } else {
                             myJwt.makeToken(results[0].u_employee_number, results[0].u_name, results[0].u_department).then((token) => {
-                                res.status(200).json({
-                                    message: '로그인 성공, 토큰 발행',
-                                    token: token
-                                });
+                                const empNum = results[0].u_employee_number;
+                                if(empNum == '201739413' || empNum == '201433894' || empNum == '201636082' || empNum == '201533878' ){
+                                    res.status(200).json({
+                                        message: '로그인 성공, 토큰 발행',
+                                        token: token,
+                                        isAdmin : true
+                                    });
+                                } else {
+                                    res.status(200).json({
+                                        message: '로그인 성공, 토큰 발행',
+                                        token: token,
+                                        isAdmin : false
+                                    });
+                                }
                             }, (error) => {
                                 console.log(error);
                                 res.status(500).json({
@@ -141,24 +151,7 @@ const login = (req, res) => {
     }
 }
 
-/* --------------------------------------
-               토큰 확인용 임시
------------------------------------------*/
-const test = (req, res) => {
-    const {
-        token
-    } = req.body;
 
-    myJwt.verifyToken(token).then((decoded) => {
-        console.log('decoded : ', decoded);
-        res.json(decoded);
-    }, (error) => {
-        console.log('test error :', error);
-        res.json(error);
-    });
-}
-
-router.post('/test', test);
 router.post('/login', login);
 router.post('/register', register);
 module.exports = router;
