@@ -107,9 +107,6 @@ const check = (req, res) => {
                 ap
             } = req.body;
 
-
-
-
             if (!method || !type) {
                 res.status(400).json({
                     message: '잘못된 전달인자입니다.'
@@ -160,7 +157,7 @@ const check = (req, res) => {
                 const done = () => {
                     if (isValidLocation) {
                         const employeeNumber = decoded.employeeNumber;
-
+                      
                         if (type === 'in') {
                             db.query('SELECT c_status FROM gb_temp WHERE c_employee_number = ? AND c_date = curdate()', [decoded.employeeNumber], (error, results, fields) => {
                                 if (error) {
@@ -239,7 +236,7 @@ const check = (req, res) => {
                     }
                 }
             }
-
+          }
         }, (error) => {
             if (error.name === "TokenExpiredError") {
                 res.status(401).json({
