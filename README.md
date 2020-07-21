@@ -1,4 +1,4 @@
-## REST API REFERENCE [작성중]
+## REST API REFERENCE
 * version : 3.1
 * server : http://34.82.68.95:3000/
 * changeLog
@@ -14,7 +14,7 @@
     * 사원별 근무 일정 목록 조회 기능
     * 일자별 근태 기록 목록 조회 기능 추가
     * 내 출퇴근 상태 확인 기능 버그 
-  * 3.1 : 일자별 근태 기록 uri 수정
+  * 3.1 : 일자별 근태 기록 uri 수정, 어드민 api 일부 버그 수정
 ----
 ### 회원가입 [POST]  /auth/register
 
