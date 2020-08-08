@@ -20,6 +20,21 @@
     * 출퇴근시 GPS, WIFI 체크 로직 추가
     * 연동 과정에서 발생한 버그 수정
     * 토큰 확인용 임시기능 삭제
+----
+### 목록
+* #### 회원기능
+  * [회원가입 [POST] /auth/register](https://github.com/g-bridge-etners/rest-api#%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85-post--authregister)  
+  * [로그인 [POST] /auth/login](https://github.com/g-bridge-etners/rest-api#%EB%A1%9C%EA%B7%B8%EC%9D%B8-post--authlogin)
+* #### 출퇴근 기능
+  * [내 출퇴근 상태 확인 [GET] /commute/status](https://github.com/g-bridge-etners/rest-api#%EB%82%B4-%EC%B6%9C%ED%87%B4%EA%B7%BC-%EC%83%81%ED%83%9C-%ED%99%95%EC%9D%B8-get--commutestatus)
+  * [출퇴근 기능 [PATCH] /commute/check](https://github.com/g-bridge-etners/rest-api#%EC%B6%9C%ED%87%B4%EA%B7%BC-%EA%B8%B0%EB%8A%A5-patch--commutecheck)
+  * [내 출퇴근 기록 조회 [GET] /commute/history](https://github.com/g-bridge-etners/rest-api#%EB%82%B4-%EC%B6%9C%ED%87%B4%EA%B7%BC-%EA%B8%B0%EB%A1%9D-%EC%A1%B0%ED%9A%8C-get--commutehistory)
+* #### 관리자 기능
+  * [사원 근무일정 수정 기능 [PUT] /admin/attendance](https://github.com/g-bridge-etners/rest-api#%EA%B4%80%EB%A6%AC%EC%9E%90---%EC%82%AC%EC%9B%90-%EA%B7%BC%EB%AC%B4%EC%9D%BC%EC%A0%95-%EC%88%98%EC%A0%95-%EA%B8%B0%EB%8A%A5-put--adminattendance)
+  * [사원 근무일정 조회 기능 [GET] /admin/attendance](https://github.com/g-bridge-etners/rest-api#%EA%B4%80%EB%A6%AC%EC%9E%90---%EC%82%AC%EC%9B%90-%EA%B7%BC%EB%AC%B4%EC%9D%BC%EC%A0%95-%EC%A1%B0%ED%9A%8C-%EA%B8%B0%EB%8A%A5-get--adminattendances)
+  * [일자별 근태기록 목록 조회 기능 [GET] /admin/report/daily/[date]](https://github.com/g-bridge-etners/rest-api#%EA%B4%80%EB%A6%AC%EC%9E%90---%EC%9D%BC%EC%9E%90%EB%B3%84-%EA%B7%BC%ED%83%9C%EA%B8%B0%EB%A1%9D-%EB%AA%A9%EB%A1%9D-%EC%A1%B0%ED%9A%8C-%EA%B8%B0%EB%8A%A5-get--adminreportdailydate)
+  * [회사 위치정보 등록 기능 [POST] /admin/location](https://github.com/g-bridge-etners/rest-api#%EA%B4%80%EB%A6%AC%EC%9E%90---%ED%9A%8C%EC%82%AC-%EC%9C%84%EC%B9%98%EC%A0%95%EB%B3%B4-%EB%93%B1%EB%A1%9D-%EA%B8%B0%EB%8A%A5--post--adminlocation)
+
 
 ----
 ### 회원가입 [POST]  /auth/register
